@@ -55,3 +55,9 @@ target/
 
 # Emacs
 *~
+
+# node modules
+node_modules/
+
+# bower
+app/components/

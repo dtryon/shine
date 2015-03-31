@@ -1,0 +1,25 @@
+{
+  "name": "shine",
+  "version": "0.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp": "~3.8.11"
+  },
+  "devDependencies": {
+    "gulp": "~3.8.11",
+    "bower": "~1.4.0"
+  },
+  "scripts": {
+    "test": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dtryon/shine.git"
+  },
+  "author": "Davin Tryon",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/dtryon/shine/issues"
+  }
+}
