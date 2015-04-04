@@ -52,7 +52,7 @@ var ImageViewer = React.createClass({
 			// };
 
 			var reader = new FileReader();
-			var file = this.props.files[this.props.files.length-1];  // this is bad
+			var file = this.props.files[0];
 			reader.readAsDataURL(file);
 			reader.onload = function(imgSrc) {
 				this.replaceState({images: [imgSrc.target.result]});
@@ -79,7 +79,7 @@ var FileUploader = React.createClass({
 		return {files: []};
 	},
 	handleFileUploaded: function(file) {
-		this.state.files.push(file);		
+		this.state.files[0] = file;		
 		this.setState({files: this.state.files});
 	},
 	render: function() {
