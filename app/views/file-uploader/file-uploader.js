@@ -32,19 +32,44 @@ var Uploader = React.createClass({
 });
 
 var ImageViewer = React.createClass({
+	getInitialState: function() {
+		return {images: []}
+	},
+	componentWillReceiveProps: function() {
 
-	render: function() {
-		
+
 		if (this.props.files.length > 0) {
-			return (
-				<div id="viewer">
-					{this.props.files[0].name}
-				</div>
-			);
+			// for (var i = this.props.files.length - 1; i >= 0; i--) {
+			// 	(function (ctx, counter) {
+			// 		var reader = new FileReader();
+			// 		var file = ctx.props.files[counter];
+			// 		reader.readAsDataURL(file);
+			// 		reader.onload = function(imgSrc) {
+			// 			ctx.replaceState({images: [imgSrc.target.result]});
+			// 			console.log('done: ', file.name);
+			// 		}.bind(ctx);
+			// 	})(this, i);
+			// };
+
+			var reader = new FileReader();
+			var file = this.props.files[this.props.files.length-1];  // this is bad
+			reader.readAsDataURL(file);
+			reader.onload = function(imgSrc) {
+				this.replaceState({images: [imgSrc.target.result]});
+			}.bind(this);
 		}
-		return (
-			<div id="viewer"></div>
-		);
+	},
+	render: function() {
+		if (this.state.images.length > 0) {		
+			var images = [];
+			for (var i = this.state.images.length - 1; i >= 0; i--) {
+				var image = React.createElement('img', {'src': this.state.images[i], 'key': 'img' + i});
+				images.push(image);
+			};
+			var viewer = React.createElement('div', {id: 'viewer'}, images);
+			return viewer;
+		}
+		return React.createElement('div');
 	}
 });
 
