@@ -36,37 +36,129 @@ var ImageViewer = React.createClass({
 		return {images: []}
 	},
 	componentWillReceiveProps: function() {
-
-
+		
 		if (this.props.files.length > 0) {
-			// for (var i = this.props.files.length - 1; i >= 0; i--) {
-			// 	(function (ctx, counter) {
-			// 		var reader = new FileReader();
-			// 		var file = ctx.props.files[counter];
-			// 		reader.readAsDataURL(file);
-			// 		reader.onload = function(imgSrc) {
-			// 			ctx.replaceState({images: [imgSrc.target.result]});
-			// 			console.log('done: ', file.name);
-			// 		}.bind(ctx);
-			// 	})(this, i);
-			// };
-
 			var reader = new FileReader();
 			var file = this.props.files[0];
 			reader.readAsDataURL(file);
 			reader.onload = function(imgSrc) {
-				this.replaceState({images: [imgSrc.target.result]});
+				this.setState({images: [{src: imgSrc.target.result, file: file}]});
 			}.bind(this);
 		}
 	},
+	componentDidUpdate: function() {
+		if (this.state.images.length > 0) {	
+			var viewer = React.findDOMNode(this.refs.viewer);
+			var canvasImage = React.findDOMNode(this.refs.canvasImage);
+			var canvasLayover = React.findDOMNode(this.refs.canvasLayover);
+			var context = canvasImage.getContext('2d');
+			var img = new Image();
+			
+			img.onload = function() {
+				var width = img.width;
+				var height = img.height;
+
+				canvasImage.width = width;
+				canvasImage.height = height;
+
+				canvasLayover.width = width;
+				canvasLayover.height = height;
+
+				context.drawImage(img, 0, 0);
+
+			}.bind(this);
+
+			img.src = this.state.images[0].src;
+
+
+			// layover
+			var originX = 0;
+			var originY = 0;
+			var paint = false;
+			var contextLayover = canvasLayover.getContext('2d');
+			var interval = 10; // 10px increments
+
+			function redraw(x, y){
+				
+				if (x && y) {
+					var xInterval = Math.round(x / interval) * interval;
+					var yInterval = Math.round(y / interval) * interval;
+
+					if (xInterval && yInterval) {
+
+						contextLayover.clearRect(0, 0, contextLayover.canvas.width, contextLayover.canvas.height);
+
+						contextLayover.strokeStyle = "#000000";
+						contextLayover.lineWidth = 2;
+
+						contextLayover.beginPath();
+						contextLayover.moveTo(originX, originY);
+						contextLayover.lineTo(originX, yInterval);
+						contextLayover.closePath();
+						contextLayover.stroke();
+						contextLayover.lineTo(xInterval, originY);
+						contextLayover.closePath();
+						contextLayover.stroke();
+
+						contextLayover.beginPath();
+						contextLayover.moveTo(xInterval, yInterval);
+						contextLayover.lineTo(originX, yInterval);
+						contextLayover.closePath();
+						contextLayover.stroke();
+						contextLayover.lineTo(xInterval, originY);
+						contextLayover.closePath();
+						contextLayover.stroke();
+						
+					}
+				}
+			}
+
+			canvasLayover.addEventListener('mousedown', function(e){
+				
+				originX = (e.pageX - this.offsetLeft) - viewer.offsetLeft;
+				originY = (e.pageY - this.offsetTop) - viewer.offsetTop;
+
+				paint = true;
+
+				redraw();
+			});
+
+			canvasLayover.addEventListener('mousemove', function(e) {
+				if(paint) {
+
+					var mouseX = (e.pageX - this.offsetLeft) - viewer.offsetLeft;
+					var mouseY = (e.pageY - this.offsetTop) - viewer.offsetTop;
+
+					redraw(mouseX, mouseY);
+				}
+			});
+
+			canvasLayover.addEventListener('mouseup', function(e) {
+
+				paint = false;
+			});
+
+			canvasLayover.addEventListener('mouseleave', function(e) {
+
+				paint = false;
+			});
+		}
+	},
 	render: function() {
-		if (this.state.images.length > 0) {		
-			var images = [];
-			for (var i = this.state.images.length - 1; i >= 0; i--) {
-				var image = React.createElement('img', {'src': this.state.images[i], 'key': 'img' + i});
-				images.push(image);
-			};
-			var viewer = React.createElement('div', {id: 'viewer'}, images);
+		if (this.state.images.length > 0) {			
+			var width = this.state.images[0].file.width;
+			var height = this.state.images[0].file.height;		
+			console.log(file);
+			var canvasImage = React.createElement('canvas', {width: width, 
+														height: height, 
+														style: {position: 'absolute', left: 0, top: 0, zIndex: 0, border: 1},
+														ref: 'canvasImage'});
+			var canvasLayover = React.createElement('canvas', {width: width, 
+														height: height, 
+														style: {position: 'absolute', left: 0, top: 0, zIndex: 1},
+														ref: 'canvasLayover'});
+
+			var viewer = React.createElement('div', {id: 'viewer', style: {position: 'relative'}, ref: 'viewer'}, canvasImage, canvasLayover);
 			return viewer;
 		}
 		return React.createElement('div');
