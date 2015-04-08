@@ -86,14 +86,25 @@ var ImageViewer = React.createClass({
 						contextLayover.globalAlpha = 1;
 						contextLayover.clearRect(0, 0, contextLayover.canvas.width, contextLayover.canvas.height);
 
-						contextLayover.fillStyle = '#000';
-						contextLayover.fillRect(originX, originY, xInterval - originX, yInterval - originY);
+    					var rect = new Path2D();
+				        rect.rect(originX, originY, xInterval - originX, yInterval - originY);
+				    	rect.fillStyle = '#000';
+				    	contextLayover.fill(rect)
 
 						contextLayover.globalCompositeOperation = 'source-out';
 						contextLayover.globalAlpha = 0.5;
 
 						contextLayover.fillStyle = '#000';
 						contextLayover.fillRect(0, 0, contextLayover.canvas.width, contextLayover.canvas.height);
+
+						contextLayover.globalCompositeOperation = 'source-over';
+						contextLayover.globalAlpha = 1;
+
+						var rect = new Path2D();
+				        rect.rect(originX, originY, xInterval - originX, yInterval - originY);
+				    	contextLayover.strokeStyle = '#000';
+				    	contextLayover.lineWidth = 2;
+				    	contextLayover.stroke(rect)
 					}
 				}
 			}
