@@ -60,7 +60,6 @@ var ImageViewer = React.createClass({
 
 				canvasImage.width = width;
 				canvasImage.height = height;
-
 				canvasLayover.width = width;
 				canvasLayover.height = height;
 
@@ -69,7 +68,6 @@ var ImageViewer = React.createClass({
 			}.bind(this);
 
 			img.src = this.state.images[0].src;
-
 
 			// layover
 			var originX = 0;
@@ -85,38 +83,25 @@ var ImageViewer = React.createClass({
 					var yInterval = Math.round(y / interval) * interval;
 
 					if (xInterval && yInterval) {
-
+						contextLayover.globalAlpha = 1;
 						contextLayover.clearRect(0, 0, contextLayover.canvas.width, contextLayover.canvas.height);
 
-						contextLayover.strokeStyle = "#000000";
-						contextLayover.lineWidth = 2;
+						contextLayover.fillStyle = '#000';
+						contextLayover.fillRect(originX, originY, xInterval - originX, yInterval - originY);
 
-						contextLayover.beginPath();
-						contextLayover.moveTo(originX, originY);
-						contextLayover.lineTo(originX, yInterval);
-						contextLayover.closePath();
-						contextLayover.stroke();
-						contextLayover.lineTo(xInterval, originY);
-						contextLayover.closePath();
-						contextLayover.stroke();
+						contextLayover.globalCompositeOperation = 'source-out';
+						contextLayover.globalAlpha = 0.5;
 
-						contextLayover.beginPath();
-						contextLayover.moveTo(xInterval, yInterval);
-						contextLayover.lineTo(originX, yInterval);
-						contextLayover.closePath();
-						contextLayover.stroke();
-						contextLayover.lineTo(xInterval, originY);
-						contextLayover.closePath();
-						contextLayover.stroke();
-						
+						contextLayover.fillStyle = '#000';
+						contextLayover.fillRect(0, 0, contextLayover.canvas.width, contextLayover.canvas.height);
 					}
 				}
 			}
 
 			canvasLayover.addEventListener('mousedown', function(e){
 				
-				originX = (e.pageX - this.offsetLeft) - viewer.offsetLeft;
-				originY = (e.pageY - this.offsetTop) - viewer.offsetTop;
+				originX = e.pageX - viewer.offsetLeft;
+				originY = e.pageY - viewer.offsetTop;
 
 				paint = true;
 
@@ -126,8 +111,8 @@ var ImageViewer = React.createClass({
 			canvasLayover.addEventListener('mousemove', function(e) {
 				if(paint) {
 
-					var mouseX = (e.pageX - this.offsetLeft) - viewer.offsetLeft;
-					var mouseY = (e.pageY - this.offsetTop) - viewer.offsetTop;
+					var mouseX = e.pageX - viewer.offsetLeft;
+					var mouseY = e.pageY - viewer.offsetTop;
 
 					redraw(mouseX, mouseY);
 				}
