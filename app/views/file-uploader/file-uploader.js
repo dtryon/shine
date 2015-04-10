@@ -38,9 +38,12 @@ var ImageViewer = React.createClass({
 	componentWillReceiveProps: function() {
 		
 		if (this.props.files.length > 0) {
+			
 			var reader = new FileReader();
 			var file = this.props.files[0];
+			
 			reader.readAsDataURL(file);
+			
 			reader.onload = function(imgSrc) {
 				this.setState({images: [{src: imgSrc.target.result, file: file}]});
 			}.bind(this);
@@ -48,6 +51,7 @@ var ImageViewer = React.createClass({
 	},
 	componentDidUpdate: function() {
 		if (this.state.images.length > 0) {	
+
 			var viewer = React.findDOMNode(this.refs.viewer);
 			var canvasImage = React.findDOMNode(this.refs.canvasImage);
 			var canvasLayover = React.findDOMNode(this.refs.canvasLayover);
@@ -64,7 +68,6 @@ var ImageViewer = React.createClass({
 				canvasLayover.height = height;
 
 				context.drawImage(img, 0, 0);
-
 			}.bind(this);
 
 			img.src = this.state.images[0].src;
@@ -81,13 +84,18 @@ var ImageViewer = React.createClass({
 				if (x && y) {
 					var xInterval = Math.round(x / interval) * interval;
 					var yInterval = Math.round(y / interval) * interval;
+					originX = Math.round(originX / interval) * interval;
+					originY = Math.round(originY / interval) * interval;
+
+					var boxWidth = xInterval - originX;
+					var boxHeight = yInterval - originY;
 
 					if (xInterval && yInterval) {
 						contextLayover.globalAlpha = 1;
 						contextLayover.clearRect(0, 0, contextLayover.canvas.width, contextLayover.canvas.height);
 
     					var rect = new Path2D();
-				        rect.rect(originX, originY, xInterval - originX, yInterval - originY);
+				        rect.rect(originX, originY, boxWidth, boxHeight);
 				    	rect.fillStyle = '#000';
 				    	contextLayover.fill(rect)
 
@@ -101,10 +109,14 @@ var ImageViewer = React.createClass({
 						contextLayover.globalAlpha = 1;
 
 						var rect = new Path2D();
-				        rect.rect(originX, originY, xInterval - originX, yInterval - originY);
+				        rect.rect(originX, originY, boxWidth, boxHeight);
 				    	contextLayover.strokeStyle = '#000';
 				    	contextLayover.lineWidth = 2;
 				    	contextLayover.stroke(rect)
+
+				    	contextLayover.fillStyle = '#FFF';
+				    	var measurements = 'w: ' + boxWidth + "\n" + 'h: ' + boxHeight;
+				    	contextLayover.fillText(measurements, xInterval+3, yInterval+3);
 					}
 				}
 			}
@@ -141,14 +153,16 @@ var ImageViewer = React.createClass({
 		}
 	},
 	render: function() {
-		if (this.state.images.length > 0) {			
+		if (this.state.images.length > 0) {		
+
 			var width = this.state.images[0].file.width;
 			var height = this.state.images[0].file.height;		
-			console.log(file);
+
 			var canvasImage = React.createElement('canvas', {width: width, 
 														height: height, 
 														style: {position: 'absolute', left: 0, top: 0, zIndex: 0, border: 1},
 														ref: 'canvasImage'});
+
 			var canvasLayover = React.createElement('canvas', {width: width, 
 														height: height, 
 														style: {position: 'absolute', left: 0, top: 0, zIndex: 1},
