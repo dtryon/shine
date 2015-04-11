@@ -20,8 +20,8 @@ var Label = React.createClass({
 var Uploader = React.createClass({
 
 	extractFile: function(evt) {
-		var newFile = React.findDOMNode(this.refs.file).files[0];
-		this.props.handleNewFile(newFile);
+		var files = React.findDOMNode(this.refs.file).files;
+		this.props.handleFiles(files);
 		evt.preventDefault();
 	},
 	render: function() {
@@ -33,24 +33,21 @@ var Uploader = React.createClass({
 
 var ImageViewer = React.createClass({
 	getInitialState: function() {
-		return {images: []}
+		return {}
 	},
-	componentWillReceiveProps: function() {
-		
-		if (this.props.files.length > 0) {
-			
+	componentWillMount: function() {
+		if (this.props.file) {
 			var reader = new FileReader();
-			var file = this.props.files[0];
 			
-			reader.readAsDataURL(file);
-			
+			reader.readAsDataURL(this.props.file);
+
 			reader.onload = function(imgSrc) {
-				this.setState({images: [{src: imgSrc.target.result, file: file}]});
+				this.setState({image: {src: imgSrc.target.result, width: this.props.file.width, height: this.props.file.height}});
 			}.bind(this);
 		}
 	},
 	componentDidUpdate: function() {
-		if (this.state.images.length > 0) {	
+		if (this.state.image) {	
 
 			var viewer = React.findDOMNode(this.refs.viewer);
 			var canvasImage = React.findDOMNode(this.refs.canvasImage);
@@ -70,7 +67,7 @@ var ImageViewer = React.createClass({
 				context.drawImage(img, 0, 0);
 			}.bind(this);
 
-			img.src = this.state.images[0].src;
+			img.src = this.state.image.src;
 
 			// layover
 			var originX = 0;
@@ -153,25 +150,20 @@ var ImageViewer = React.createClass({
 		}
 	},
 	render: function() {
-		if (this.state.images.length > 0) {		
+		
+		if (this.state.image) {		
 
-			var width = this.state.images[0].file.width;
-			var height = this.state.images[0].file.height;		
+			var width = this.state.image.width;
+			var height = this.state.image.height;		
 
-			var canvasImage = React.createElement('canvas', {width: width, 
-														height: height, 
-														style: {position: 'absolute', left: 0, top: 0, zIndex: 0, border: 1},
-														ref: 'canvasImage'});
-
-			var canvasLayover = React.createElement('canvas', {width: width, 
-														height: height, 
-														style: {position: 'absolute', left: 0, top: 0, zIndex: 1},
-														ref: 'canvasLayover'});
-
-			var viewer = React.createElement('div', {id: 'viewer', style: {position: 'relative'}, ref: 'viewer'}, canvasImage, canvasLayover);
-			return viewer;
+			return (
+					<div id="viewer" style={{position: 'relative'}} ref="viewer">
+						<canvas width={width} height={height} style={{position: 'absolute', left: 0, top: 0, zIndex: 0, border: 1}} ref="canvasImage"/>
+						<canvas width={width} height={height} style={{position: 'absolute', left: 0, top: 0, zIndex: 1, border: 1}} ref="canvasLayover"/>
+					</div>
+				)
 		}
-		return React.createElement('div');
+		return (<div></div>);
 	}
 });
 
@@ -180,17 +172,23 @@ var FileUploader = React.createClass({
 	getInitialState: function() {
 		return {files: []};
 	},
-	handleFileUploaded: function(file) {
-		this.state.files[0] = file;		
-		this.setState({files: this.state.files});
+	handleFileUploads: function(files) {
+		if (files) {
+			this.state.files = files;		
+			this.setState({files: this.state.files});
+		}
 	},
 	render: function() {
+		var imageViewers = [];
+		for (var i = 0; i < this.state.files.length; i++) {
+			imageViewers.push(<ImageViewer file={this.state.files[i]} key={'file' + i} />);
+		}
 		return (
 			<form name="frm">
 				<Label targetName="file" content="Upload Files:"/><br/>
-				<Uploader handleNewFile={this.handleFileUploaded}/><br/><br/>
+				<Uploader handleFiles={this.handleFileUploads}/><br/><br/>
 				<Label content="Viewer:"/><br/>
-				<ImageViewer files={this.state.files} />
+				{imageViewers}
 			</form>
 		);
 	}
