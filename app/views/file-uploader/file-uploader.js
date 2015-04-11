@@ -42,7 +42,7 @@ var ImageViewer = React.createClass({
 			reader.readAsDataURL(this.props.file);
 
 			reader.onload = function(imgSrc) {
-				this.setState({image: {src: imgSrc.target.result, width: this.props.file.width, height: this.props.file.height}});
+				this.setState({image: imgSrc.target.result});
 			}.bind(this);
 		}
 	},
@@ -70,7 +70,7 @@ var ImageViewer = React.createClass({
 				contextImage.drawImage(img, 0, 0);
 			}.bind(this);
 
-			img.src = this.state.image.src;
+			img.src = this.state.image;
 
 			// layover
 			var originX = 0;
