@@ -51,8 +51,9 @@ var ImageViewer = React.createClass({
 
 			var viewer = React.findDOMNode(this.refs.viewer);
 			var canvasImage = React.findDOMNode(this.refs.canvasImage);
+			var contextImage = canvasImage.getContext('2d');
 			var canvasLayover = React.findDOMNode(this.refs.canvasLayover);
-			var context = canvasImage.getContext('2d');
+			var contextLayover = canvasLayover.getContext('2d');
 			var img = new Image();
 			
 			img.onload = function() {
@@ -66,7 +67,7 @@ var ImageViewer = React.createClass({
 				canvasLayover.width = width;
 				canvasLayover.height = height;
 
-				context.drawImage(img, 0, 0);
+				contextImage.drawImage(img, 0, 0);
 			}.bind(this);
 
 			img.src = this.state.image.src;
@@ -75,7 +76,6 @@ var ImageViewer = React.createClass({
 			var originX = 0;
 			var originY = 0;
 			var paint = false;
-			var contextLayover = canvasLayover.getContext('2d');
 			var interval = 10; // 10px increments
 
 			function redraw(x, y){
