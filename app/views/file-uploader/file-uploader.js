@@ -59,6 +59,8 @@ var ImageViewer = React.createClass({
 				var width = img.width;
 				var height = img.height;
 
+				viewer.setAttribute('style','position:relative;height:'+(height+5)+'px');
+
 				canvasImage.width = width;
 				canvasImage.height = height;
 				canvasLayover.width = width;
@@ -112,8 +114,8 @@ var ImageViewer = React.createClass({
 				    	contextLayover.stroke(rect)
 
 				    	contextLayover.fillStyle = '#FFF';
-				    	var measurements = 'w: ' + boxWidth + "\n" + 'h: ' + boxHeight;
-				    	contextLayover.fillText(measurements, xInterval+3, yInterval+3);
+				    	var measurements = 'w: ' + Math.abs(boxWidth) + "\n" + 'h: ' + Math.abs(boxHeight);
+				    	contextLayover.fillText(measurements, xInterval+10, yInterval+10);
 					}
 				}
 			}
@@ -153,13 +155,10 @@ var ImageViewer = React.createClass({
 		
 		if (this.state.image) {		
 
-			var width = this.state.image.width;
-			var height = this.state.image.height;		
-
 			return (
-					<div id="viewer" style={{position: 'relative'}} ref="viewer">
-						<canvas width={width} height={height} style={{position: 'absolute', left: 0, top: 0, zIndex: 0, border: 1}} ref="canvasImage"/>
-						<canvas width={width} height={height} style={{position: 'absolute', left: 0, top: 0, zIndex: 1, border: 1}} ref="canvasLayover"/>
+					<div style={{position: 'relative'}} ref="viewer">
+						<canvas style={{position: 'absolute', left: 0, top: 0, zIndex: 0, border: 1}} ref="canvasImage"/>
+						<canvas style={{position: 'absolute', left: 0, top: 0, zIndex: 1, border: 1}} ref="canvasLayover"/>
 					</div>
 				)
 		}
