@@ -48,7 +48,24 @@ var ImageViewer = React.createClass({
 	},
 	dimensionsSelected: function(x, y, w, h) {
 
-		console.log('x:' + x, 'y: ' + y, 'w: ' + w, 'h: ' + h);
+		var canvasCropped = React.findDOMNode(this.refs.canvasCropped);
+		var contextCropped = canvasCropped.getContext('2d');
+
+		canvasCropped.width = w;
+		canvasCropped.height = h;
+
+		var croppedImg = new Image();
+		croppedImg.onload = function() {
+				var imageWidth = croppedImg.width;
+				canvasCropped.width = w;
+				canvasCropped.height = h;
+
+				canvasCropped.setAttribute('style','margin-bottom:5px;margin-left:' + (imageWidth+5) + 'px');
+
+				contextCropped.drawImage(croppedImg, x, y, w, h, 0, 0, w, h);
+			}.bind(this);
+
+		croppedImg.src = this.state.image;
 	},
 	componentDidUpdate: function() {
 		var self = this;
@@ -66,7 +83,7 @@ var ImageViewer = React.createClass({
 				var width = img.width;
 				var height = img.height;
 
-				viewer.setAttribute('style','position:relative;height:'+(height+5)+'px');
+				viewer.setAttribute('style','display:inline-block;position:relative;height:'+(height+5)+'px');
 
 				canvasImage.width = width;
 				canvasImage.height = height;
@@ -76,7 +93,6 @@ var ImageViewer = React.createClass({
 				contextImage.drawImage(img, 0, 0);
 			}.bind(this);
 
-			console.log(this.state.image);
 			img.src = this.state.image;
 
 			// layover
@@ -166,10 +182,13 @@ var ImageViewer = React.createClass({
 		if (this.state.image) {		
 
 			return (
-					<div style={{position: 'relative'}} ref="viewer">
+				<div>
+					<div style={{position: 'relative', display: 'inline-block'}} ref="viewer">
 						<canvas style={{position: 'absolute', left: 0, top: 0, zIndex: 0, border: 1}} ref="canvasImage"/>
 						<canvas style={{position: 'absolute', left: 0, top: 0, zIndex: 1, border: 1}} ref="canvasLayover"/>
 					</div>
+					<canvas ref="canvasCropped"/>
+				</div>
 				)
 		}
 		return (<div></div>);
