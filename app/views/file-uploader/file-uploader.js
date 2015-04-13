@@ -46,7 +46,13 @@ var ImageViewer = React.createClass({
 			}.bind(this);
 		}
 	},
+	dimensionsSelected: function(x, y, w, h) {
+
+		console.log('x:' + x, 'y: ' + y, 'w: ' + w, 'h: ' + h);
+	},
 	componentDidUpdate: function() {
+		var self = this;
+		
 		if (this.state.image) {	
 
 			var viewer = React.findDOMNode(this.refs.viewer);
@@ -70,24 +76,27 @@ var ImageViewer = React.createClass({
 				contextImage.drawImage(img, 0, 0);
 			}.bind(this);
 
+			console.log(this.state.image);
 			img.src = this.state.image;
 
 			// layover
 			var originX = 0;
 			var originY = 0;
+			var boxWidth = 0;
+			var boxHeight = 0;
 			var paint = false;
 			var interval = 10; // 10px increments
 
 			function redraw(x, y){
-				
+
 				if (x && y) {
 					var xInterval = Math.round(x / interval) * interval;
 					var yInterval = Math.round(y / interval) * interval;
 					originX = Math.round(originX / interval) * interval;
 					originY = Math.round(originY / interval) * interval;
 
-					var boxWidth = xInterval - originX;
-					var boxHeight = yInterval - originY;
+					boxWidth = xInterval - originX;
+					boxHeight = yInterval - originY;
 
 					if (xInterval && yInterval) {
 						contextLayover.globalAlpha = 1;
@@ -142,6 +151,7 @@ var ImageViewer = React.createClass({
 
 			canvasLayover.addEventListener('mouseup', function(e) {
 
+				self.dimensionsSelected(originX, originY, boxWidth, boxHeight);
 				paint = false;
 			});
 
