@@ -62,7 +62,7 @@ var ImageViewer = React.createClass({
 
 				canvasCropped.setAttribute('style','margin-bottom:5px;margin-left:' + (imageWidth+5) + 'px');
 
-				contextCropped.drawImage(croppedImg, x, y, w, h, 0, 0, w, h);
+				contextCropped.drawImage(croppedImg, x, y, w, h, 0, 0, w/* - 100*/, h/* - 100*/);  // to resize, change width and height of destination box
 			}.bind(this);
 
 		croppedImg.src = this.state.image;
