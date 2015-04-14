@@ -57,8 +57,6 @@ var ImageViewer = React.createClass({
 		var croppedImg = new Image();
 		croppedImg.onload = function() {
 				var imageWidth = croppedImg.width;
-				canvasCropped.width = w;
-				canvasCropped.height = h;
 
 				canvasCropped.setAttribute('style','margin-bottom:5px;margin-left:' + (imageWidth+5) + 'px');
 
@@ -98,6 +96,8 @@ var ImageViewer = React.createClass({
 			// layover
 			var originX = 0;
 			var originY = 0;
+			var xInterval = 0;
+			var yInterval = 0;
 			var boxWidth = 0;
 			var boxHeight = 0;
 			var paint = false;
@@ -106,8 +106,8 @@ var ImageViewer = React.createClass({
 			function redraw(x, y){
 
 				if (x && y) {
-					var xInterval = Math.round(x / interval) * interval;
-					var yInterval = Math.round(y / interval) * interval;
+					xInterval = Math.round(x / interval) * interval;
+					yInterval = Math.round(y / interval) * interval;
 					originX = Math.round(originX / interval) * interval;
 					originY = Math.round(originY / interval) * interval;
 
@@ -166,8 +166,14 @@ var ImageViewer = React.createClass({
 			});
 
 			canvasLayover.addEventListener('mouseup', function(e) {
+				var x = xInterval;
+				var y = yInterval;
 
-				self.dimensionsSelected(originX, originY, boxWidth, boxHeight);
+				if (originX < xInterval) { x = originX; }
+				if (originY < yInterval) { y = originY; }
+				
+				self.dimensionsSelected(x, y, Math.abs(boxWidth), Math.abs(boxHeight));
+				
 				paint = false;
 			});
 
