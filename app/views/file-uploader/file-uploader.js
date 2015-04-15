@@ -208,14 +208,13 @@ var FileUploader = React.createClass({
 	},
 	handleFileUploads: function(files) {
 		if (files) {
-			this.state.files = files;		
-			this.setState({files: this.state.files});
+			this.setState({files: files});
 		}
 	},
 	render: function() {
 		var imageViewers = [];
 		for (var i = 0; i < this.state.files.length; i++) {
-			imageViewers.push(<ImageViewer file={this.state.files[i]} key={'file' + i} />);
+			imageViewers.push(<ImageViewer file={this.state.files[i]} key={'file_' + this.state.files[i].name + '_' + i} />);
 		}
 		return (
 			<form name="frm">
