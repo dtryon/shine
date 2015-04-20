@@ -21,7 +21,7 @@ var Uploader = React.createClass({
 
 	extractFile: function(evt) {
 		var files = React.findDOMNode(this.refs.file).files;
-		this.props.handleFiles(files);
+		this.props.onUpload(files);
 		evt.preventDefault();
 	},
 	render: function() {
@@ -31,7 +31,7 @@ var Uploader = React.createClass({
 	}
 });
 
-var ImageViewer = React.createClass({
+var ThumbnailSelector = React.createClass({
 	getInitialState: function() {
 		return {}
 	},
@@ -48,19 +48,22 @@ var ImageViewer = React.createClass({
 	},
 	dimensionsSelected: function(x, y, w, h) {
 
+		var IMAGE_SIZE = 100;
+
 		var canvasCropped = React.findDOMNode(this.refs.canvasCropped);
 		var contextCropped = canvasCropped.getContext('2d');
 
-		canvasCropped.width = w;
-		canvasCropped.height = h;
+		canvasCropped.width = IMAGE_SIZE;
+		canvasCropped.height = IMAGE_SIZE;
 
 		var croppedImg = new Image();
 		croppedImg.onload = function() {
+
 				var imageWidth = croppedImg.width;
+				canvasCropped.setAttribute('style','margin-bottom:5px;margin-left:' + (imageWidth+5) + 'px;');
 
-				canvasCropped.setAttribute('style','margin-bottom:5px;margin-left:' + (imageWidth+5) + 'px');
-
-				contextCropped.drawImage(croppedImg, x, y, w, h, 0, 0, w/* - 100*/, h/* - 100*/);  // to resize, change width and height of destination box
+				contextCropped.drawImage(croppedImg, x, y, w, h, 0, 0, IMAGE_SIZE, IMAGE_SIZE);
+				this.props.onSelected(this.state.image, canvasCropped.toDataURL('image/jpeg'));
 			}.bind(this);
 
 		croppedImg.src = this.state.image;
@@ -114,6 +117,10 @@ var ImageViewer = React.createClass({
 					boxWidth = xInterval - originX;
 					boxHeight = yInterval - originY;
 
+					// square
+					boxWidth = boxWidth < boxHeight ? boxHeight : boxWidth;
+					boxHeight = boxHeight < boxWidth ? boxWidth : boxHeight; 
+
 					if (xInterval && yInterval) {
 						contextLayover.globalAlpha = 1;
 						contextLayover.clearRect(0, 0, contextLayover.canvas.width, contextLayover.canvas.height);
@@ -140,7 +147,7 @@ var ImageViewer = React.createClass({
 
 				    	contextLayover.fillStyle = '#FFF';
 				    	var measurements = 'w: ' + Math.abs(boxWidth) + "\n" + 'h: ' + Math.abs(boxHeight);
-				    	contextLayover.fillText(measurements, xInterval+10, yInterval+10);
+				    	contextLayover.fillText(measurements, 10, 20);
 					}
 				}
 			}
@@ -211,17 +218,22 @@ var FileUploader = React.createClass({
 			this.setState({files: files});
 		}
 	},
+	handleThumbnailSelection: function(image, thumbnailImage) {
+
+		var service = new ImageService();
+		service.saveImage(image, thumbnailImage);
+	},
 	render: function() {
-		var imageViewers = [];
+		var ThumbnailSelectors = [];
 		for (var i = 0; i < this.state.files.length; i++) {
-			imageViewers.push(<ImageViewer file={this.state.files[i]} key={'file_' + this.state.files[i].name + '_' + i} />);
+			ThumbnailSelectors.push(<ThumbnailSelector file={this.state.files[i]} onSelected={this.handleThumbnailSelection} key={'file_' + this.state.files[i].name + '_' + i} />);
 		}
 		return (
 			<form name="frm">
 				<Label targetName="file" content="Upload Files:"/><br/>
-				<Uploader handleFiles={this.handleFileUploads}/><br/><br/>
+				<Uploader onUpload={this.handleFileUploads}/><br/><br/>
 				<Label content="Viewer:"/><br/>
-				{imageViewers}
+				{ThumbnailSelectors}
 			</form>
 		);
 	}
