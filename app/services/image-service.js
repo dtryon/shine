@@ -24,5 +24,25 @@ function ImageService() {
         });
 	}
 
+	obj.saveImages = function (imagesToSend) {
+
+		var payload = imagesToSend;
+
+		$.ajax({
+            url: "http://localhost:5000/images",
+            type: "POST",
+            crossDomain: true,
+            data: JSON.stringify(payload),
+            contentType: "application/json",
+            success: function (response) {
+                var resp = JSON.parse(response)
+                alert(resp.status);
+            },
+            error: function (xhr, status) {
+                alert("error");
+            }
+        });
+	}
+
 	return obj;
 }

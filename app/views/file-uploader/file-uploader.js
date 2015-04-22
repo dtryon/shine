@@ -42,7 +42,7 @@ var ThumbnailSelector = React.createClass({
 			reader.readAsDataURL(this.props.file);
 
 			reader.onload = function(imgSrc) {
-				this.setState({image: imgSrc.target.result});
+				this.setState({image: imgSrc.target.result, name: this.props.file.name});
 			}.bind(this);
 		}
 	},
@@ -63,7 +63,7 @@ var ThumbnailSelector = React.createClass({
 				canvasCropped.setAttribute('style','margin-bottom:5px;margin-left:' + (imageWidth+5) + 'px;');
 
 				contextCropped.drawImage(croppedImg, x, y, w, h, 0, 0, IMAGE_SIZE, IMAGE_SIZE);
-				this.props.onSelected(this.state.image, canvasCropped.toDataURL('image/jpeg'));
+				this.props.onSelected(this.state.name, this.state.image, canvasCropped.toDataURL('image/jpeg'));
 			}.bind(this);
 
 		croppedImg.src = this.state.image;
@@ -211,29 +211,47 @@ var ThumbnailSelector = React.createClass({
 var FileUploader = React.createClass({
 
 	getInitialState: function() {
-		return {files: []};
+		return {files: [], selectedImages: {}};
 	},
 	handleFileUploads: function(files) {
 		if (files) {
-			this.setState({files: files});
+			this.state.files = files;
+			this.setState(this.state);
 		}
 	},
-	handleThumbnailSelection: function(image, thumbnailImage) {
+	handleSelection: function(name, detailImage, thumbnailImage) {
 
-		var service = new ImageService();
-		service.saveImage(image, thumbnailImage);
+		this.state.selectedImages[name] = { name: name, detail: detailImage, thumbnail: thumbnailImage };
+		this.setState(this.state);
+	},
+	saveImages: function(evt) {
+
+		var imagesToSend = [];
+
+		_.forOwn(this.state.selectedImages, function(value, key) {
+		  	imagesToSend.push(value);
+		});
+		
+		if (imagesToSend.length > 0) {
+			var imageService = ImageService();
+		  	imageService.saveImages(imagesToSend);
+		}
+		
+		this.setState({files: [], selectedImages: {}});
+		evt.preventDefault();
 	},
 	render: function() {
 		var ThumbnailSelectors = [];
 		for (var i = 0; i < this.state.files.length; i++) {
-			ThumbnailSelectors.push(<ThumbnailSelector file={this.state.files[i]} onSelected={this.handleThumbnailSelection} key={'file_' + this.state.files[i].name + '_' + i} />);
+			ThumbnailSelectors.push(<ThumbnailSelector file={this.state.files[i]} onSelected={this.handleSelection} key={'file_' + this.state.files[i].name + '_' + i} />);
 		}
 		return (
 			<form name="frm">
 				<Label targetName="file" content="Upload Files:"/><br/>
 				<Uploader onUpload={this.handleFileUploads}/><br/><br/>
-				<Label content="Viewer:"/><br/>
+				<Label content="Viewer:"/> <button onClick={this.saveImages}>Save Images</button><br/>
 				{ThumbnailSelectors}
+				
 			</form>
 		);
 	}

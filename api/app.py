@@ -20,5 +20,10 @@ def get_image(image_id):
 def new_image():
     return 'Image with thumbnail \'%s\'' % request.json.get('thumbnail')
 
+@app.route('/images', methods=['POST'])
+def new_images():
+	#thumbnail = 'Image with thumbnail \'%s\'' % request.json[0].get('thumbnail')
+    return 'The server got \'%s\' images' % str(len(request.json))
+
 if __name__ == "__main__":
     app.run()
