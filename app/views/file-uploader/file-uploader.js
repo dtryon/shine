@@ -246,12 +246,11 @@ var FileUploader = React.createClass({
 			ThumbnailSelectors.push(<ThumbnailSelector file={this.state.files[i]} onSelected={this.handleSelection} key={'file_' + this.state.files[i].name + '_' + i} />);
 		}
 		return (
-			<form name="frm">
+			<form name="uploader-form">
 				<Label targetName="file" content="Upload Files:"/><br/>
 				<Uploader onUpload={this.handleFileUploads}/><br/><br/>
 				<Label content="Viewer:"/> <button onClick={this.saveImages}>Save Images</button><br/>
-				{ThumbnailSelectors}
-				
+				{ThumbnailSelectors}			
 			</form>
 		);
 	}
@@ -261,3 +260,5 @@ React.render(
 	<FileUploader />,
 	document.getElementById('file-uploader')
 );
+
+module.exports = FileUploader if typeof module != 'undefined';
