@@ -253,7 +253,7 @@ var FileUploader = React.createClass({
 			<form name="uploader-form">
 				<Label targetName="file" content="Upload Files:"/><br/>
 				<Uploader onUpload={this.handleFileUploads}/><br/><br/>
-				<Label content="Viewer:"/> <button onClick={this.saveImages}>Save Images</button><br/>
+				<Label content="Viewer:"/><button onClick={this.saveImages}>Save Images</button><br/>
 				{ThumbnailSelectors}			
 			</form>
 		);
@@ -261,7 +261,10 @@ var FileUploader = React.createClass({
 });
 
 if (typeof module != 'undefined') {
-	module.exports = FileUploader 	
+	module.exports = {
+		FileUploader: FileUploader,
+		Label: Label
+	}; 	
 } else {
 	React.render(
 	<FileUploader />,
