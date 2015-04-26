@@ -1,6 +1,7 @@
 'use strict';
 
 jest.dontMock('../../../views/file-uploader/file-uploader');
+jest.dontMock('../../../views/file-uploader/label');
 
 describe('file-uploader component', function() {
 
@@ -8,7 +9,7 @@ describe('file-uploader component', function() {
 	var TestUtils = React.addons.TestUtils;
 
 	describe('renders in a form', function() {
-		var FileUploader = require('../../../views/file-uploader/file-uploader').FileUploader;
+		var FileUploader = require('../../../views/file-uploader/file-uploader');
 		it('has a form', function() {
 			var fileUploaderDocument = TestUtils.renderIntoDocument(
 					<FileUploader />
@@ -17,17 +18,4 @@ describe('file-uploader component', function() {
 			expect(form.props.name).toEqual('uploader-form');
 		});
 	});
-
-	describe('Label sub component', function() {
-		var Label = require('../../../views/file-uploader/file-uploader').Label;
-		it('has the correct target element name', function() {
-			var labelDocument = TestUtils.renderIntoDocument(
-					<Label targetName="foobar" content="Upload Files:"/>
-			);
-
-			var label = TestUtils.findRenderedDOMComponentWithTag(labelDocument, 'label');
-			expect(label.getDOMNode().getAttribute('for')).toEqual('{this.props.targetName}');
-		});
-	});
-	
 });

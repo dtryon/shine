@@ -1,25 +1,7 @@
-'use strict';
-
 if (typeof module != 'undefined') {
-	React = require('react/addons'); 	
+	React = require('react/addons'),
+	Label = require('./label'); 
 }
-
-var Label = React.createClass({
-
-	render: function() {
-
-		if (this.props.targetName) {
-			return (
-				<label htmlFor="{this.props.targetName}">{this.props.content}</label>
-			);
-		}
-
-		return (
-				<label>{this.props.content}</label>
-		);
-		
-	}
-});
 
 var Uploader = React.createClass({
 
@@ -261,10 +243,7 @@ var FileUploader = React.createClass({
 });
 
 if (typeof module != 'undefined') {
-	module.exports = {
-		FileUploader: FileUploader,
-		Label: Label
-	}; 	
+	module.exports = FileUploader;
 } else {
 	React.render(
 	<FileUploader />,
