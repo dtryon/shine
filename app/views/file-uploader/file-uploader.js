@@ -1,12 +1,16 @@
 'use strict';
 
+if (typeof module != 'undefined') {
+	React = require('react/addons'); 	
+}
+
 var Label = React.createClass({
 
 	render: function() {
 
 		if (this.props.targetName) {
 			return (
-				<label for="{this.props.targetName}">{this.props.content}</label>
+				<label htmlFor="{this.props.targetName}">{this.props.content}</label>
 			);
 		}
 
@@ -256,9 +260,11 @@ var FileUploader = React.createClass({
 	}
 });
 
-React.render(
+if (typeof module != 'undefined') {
+	module.exports = FileUploader 	
+} else {
+	React.render(
 	<FileUploader />,
 	document.getElementById('file-uploader')
 );
-
-module.exports = FileUploader if typeof module != 'undefined';
+}
