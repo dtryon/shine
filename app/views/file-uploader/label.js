@@ -9,7 +9,7 @@ var Label = React.createClass({
 
 		if (this.props.targetName) {
 			return (
-				<label htmlFor="{this.props.targetName}">{this.props.content}</label>
+				<label htmlFor={this.props.targetName}>{this.props.content}</label>
 			);
 		}
 

@@ -15,7 +15,16 @@ describe('file-uploader component', function() {
 			);
 
 			var label = TestUtils.findRenderedDOMComponentWithTag(labelDocument, 'label');
-			expect(label.getDOMNode().getAttribute('for')).toEqual('{this.props.targetName}');
+			expect(label.props.htmlFor).toEqual('foobar');
+		});
+
+		it('has the correct content', function() {
+			var labelDocument = TestUtils.renderIntoDocument(
+					<Label targetName="foobar" content="Upload Files:"/>
+			);
+
+			var label = TestUtils.findRenderedDOMComponentWithTag(labelDocument, 'label');
+			expect(label.getDOMNode().textContent).toEqual('Upload Files:');
 		});
 	});
 	
